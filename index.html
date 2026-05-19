@@ -160,22 +160,37 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .btn-back:hover{background:var(--bg3);color:var(--text)}
 .hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--text);font-size:18px}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:90}
+/* BOTTOM NAV — mobile only */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--border2);padding:0}
+.bnav-row{display:flex}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 12px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'Sora',sans-serif;font-size:11px;font-weight:600;gap:4px;transition:color .15s;border-top:2px solid transparent}
+.bnav-btn.active{color:var(--acc);border-top-color:var(--acc)}
+.bnav-btn .bico{font-size:20px;line-height:1}
+/* filter bar for mobile */
+.mobile-filters{display:none;padding:10px 12px;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--bg2);-webkit-overflow-scrolling:touch}
+.mobile-filters::-webkit-scrollbar{display:none}
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
+  .main{margin-left:0;padding-bottom:68px}
   .hamburger{display:block}
   .overlay.show{display:block}
-  .content{padding:14px}
+  .content{padding:12px}
   .topbar{padding:8px 12px;gap:8px}
   .chips{display:none}
   .mode-switch{display:none}
-  .hero{padding:18px 14px 14px}
+  .hero{padding:16px 14px 14px}
   .hero::after{display:none}
   .htitle{font-size:18px}
+  .hstats{gap:12px}
+  .hst-v{font-size:18px}
   .ans-wrongs{grid-template-columns:1fr}
-  .quiz-wrap{padding:14px}
+  .quiz-wrap{padding:12px}
+  .qz-setup{padding:0 12px;margin:16px auto}
   .res-grid{grid-template-columns:1fr 1fr 1fr}
+  .qz-result{padding:0 12px;margin:16px auto}
+  .bottom-nav{display:block}
+  .mobile-filters{display:flex}
 }
 </style>
 </head>
@@ -223,6 +238,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <button class="msbtn active" id="ms-study" onclick="switchMode('study')">📚 O'rganish</button>
       <button class="msbtn" id="ms-quiz" onclick="switchMode('quiz')">🎯 Quiz</button>
     </div>
+  </div>
+  <div class="mobile-filters" id="mobile-filter-bar">
+    <button class="chip ca" id="mchip-all" onclick="setFilter('all')">Hammasi</button>
+    <button class="chip" id="mchip-unseen" onclick="setFilter('unseen')">Ko'rilmagan</button>
+    <button class="chip" id="mchip-unknown" onclick="setFilter('unknown')">Bilmadim</button>
+    <button class="chip" id="mchip-known" onclick="setFilter('known')">Bildim</button>
   </div>
   <!-- STUDY VIEW -->
   <div id="study-view">
@@ -302,6 +323,20 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
     </div>
   </div>
 </div>
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <div class="bnav-row">
+    <button class="bnav-btn active" id="bn-study" onclick="switchMode('study')">
+      <span class="bico">📚</span>O'rganish
+    </button>
+    <button class="bnav-btn" id="bn-quiz" onclick="switchMode('quiz')">
+      <span class="bico">🎯</span>Quiz
+    </button>
+    <button class="bnav-btn" id="bn-topics" onclick="openSidebar()">
+      <span class="bico">📂</span>Mavzular
+    </button>
+  </div>
+</nav>
 <script>
 const Q=[
   {t:"Asoslar",q:"Dastur (Programma) tushunchasiga berilgan eng to'g'ri ta'rifni ko'rsating.",a:"Kompyuter tushunadigan tilda yozilgan buyruqlar ketma-ketligi",w:["Kompyuterda matn yozish uchun mo'ljallangan vosita","Faqat matematik hisob-kitoblar to'plami","Internet tarmog'idagi ma'lumotlar yig'indisi"]},
@@ -491,6 +526,8 @@ function setFilter(f){
   ['all','unseen','unknown','known'].forEach(x=>{
     const el=document.getElementById('chip-'+x);
     if(el)el.className='chip'+(x===f?' '+map[x]:'');
+    const mel=document.getElementById('mchip-'+x);
+    if(mel)mel.className='chip'+(x===f?' '+map[x]:'');
   });
   renderStudy();
 }
@@ -561,6 +598,12 @@ function switchMode(m){
   document.getElementById('ms-quiz').className='msbtn'+(m==='quiz'?' active':'');
   document.getElementById('study-view').style.display=m==='study'?'block':'none';
   document.getElementById('quiz-view').style.display=m==='quiz'?'block':'none';
+  // bottom nav sync
+  document.getElementById('bn-study').className='bnav-btn'+(m==='study'?' active':'');
+  document.getElementById('bn-quiz').className='bnav-btn'+(m==='quiz'?' active':'');
+  // mobile filter bar: only in study mode
+  const fb=document.getElementById('mobile-filter-bar');
+  if(fb)fb.style.display=m==='study'?'flex':'none';
   if(m==='quiz')showSetup();
 }
 
