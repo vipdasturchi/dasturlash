@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dasturlash C++ — Imtihon Tayyorgarlik</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0e17;--bg2:#111522;--bg3:#171c2e;--bg4:#1e2438;
+  --acc:#818cf8;--acc2:#38bdf8;
+  --danger:#f87171;--warn:#fbbf24;--succ:#4ade80;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --r:12px;--r2:8px;--r3:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:252px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.slogo{padding:18px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.logo-box{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#818cf820,#38bdf820);border:1px solid #818cf830;border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;color:var(--acc)}
+.logo-box span{color:var(--text3);font-weight:400}
+.stitle{font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--text3);padding:14px 16px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--acc);border-left-color:var(--acc)}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--bg4);flex-shrink:0;transition:background .2s}
+.nav-item.active .nav-dot{background:var(--acc)}
+.nav-count{margin-left:auto;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3)}
+.sbottom{margin-top:auto;padding:14px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px}
+.prog-track{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:2px;transition:width .4s;width:0}
+.sstat-row{display:flex;gap:6px;margin-top:10px}
+.sstat{flex:1;padding:6px 4px;border-radius:var(--r2);text-align:center;font-size:10px}
+.sstat.g{background:#4ade8012;color:var(--succ)}.sstat.r{background:#f8717112;color:var(--danger)}.sstat.b{background:#818cf812;color:var(--acc)}
+.sstat .n{font-size:16px;font-weight:700;display:block;font-family:'JetBrains Mono',monospace}
+.main{margin-left:252px;min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(11,14,23,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:12px}
+.srchwrap{flex:1;position:relative}
+.srch-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
+#search{width:100%;padding:8px 12px 8px 33px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+#search:focus{border-color:var(--acc)}
+#search::placeholder{color:var(--text3)}
+.chips{display:flex;gap:5px}
+.chip{padding:5px 12px;border-radius:999px;border:1px solid var(--border2);font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);background:transparent;transition:all .15s;white-space:nowrap;font-family:'Sora',sans-serif}
+.chip:hover{background:var(--bg3);color:var(--text)}
+.chip.ca{background:var(--acc);color:#0b0e17;border-color:var(--acc)}
+.chip.ck{background:#4ade8018;color:var(--succ);border-color:var(--succ)}
+.chip.cu{background:#f8717118;color:var(--danger);border-color:var(--danger)}
+.chip.cs{background:#818cf818;color:var(--acc);border-color:var(--acc)}
+.mode-switch{display:flex;border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden;flex-shrink:0}
+.msbtn{padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:'Sora',sans-serif;transition:all .15s}
+.msbtn.active{background:var(--acc);color:#0b0e17}
+.msbtn:hover:not(.active){background:var(--bg3);color:var(--text)}
+.hero{background:linear-gradient(135deg,var(--bg2),var(--bg3));border-bottom:1px solid var(--border);padding:28px 24px 20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 100% at 90% 50%,#818cf808,transparent);pointer-events:none}
+.hero::after{content:'C++';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:68px;font-weight:700;color:rgba(129,140,248,.05);pointer-events:none;user-select:none}
+.hlabel{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--acc);font-weight:600;margin-bottom:6px}
+.htitle{font-size:24px;font-weight:700;line-height:1.2;margin-bottom:4px}
+.hsub{font-size:12px;color:var(--text3)}
+.hstats{display:flex;gap:20px;margin-top:16px}
+.hst-v{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.hst-v.b{color:var(--acc2)}.hst-v.g{color:var(--succ)}.hst-v.r{color:var(--danger)}
+.hst-l{font-size:10px;color:var(--text3);margin-top:1px}
+.content{padding:24px;flex:1}
+.sechdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sectit{font-size:18px;font-weight:700}
+.secsub{font-size:12px;color:var(--text3);margin-top:2px}
+.cbadge{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:3px 10px;border-radius:999px}
+.qgrid{display:flex;flex-direction:column;gap:8px}
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .15s}
+.qcard:hover{border-color:var(--border2);transform:translateY(-1px)}
+.qcard.known{border-left:3px solid var(--succ)}.qcard.unknown{border-left:3px solid var(--danger)}
+.qcard-hdr{display:flex;align-items:center;gap:10px;padding:13px 18px;cursor:pointer;user-select:none}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);background:var(--bg4);padding:2px 7px;border-radius:4px;flex-shrink:0}
+.qtag{font-size:10px;padding:2px 7px;border-radius:4px;background:#818cf815;color:var(--acc);flex-shrink:0;font-weight:600}
+.qtxt{font-size:13px;font-weight:500;color:var(--text);flex:1;line-height:1.5}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--bg4);flex-shrink:0;margin-left:4px;transition:background .2s}
+.qcard.known .sdot{background:var(--succ)}.qcard.unknown .sdot{background:var(--danger)}
+.chev{font-size:10px;color:var(--text3);flex-shrink:0;transition:transform .2s}
+.qcard.open .chev{transform:rotate(180deg)}
+.qans{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.qcard.open .qans{max-height:400px}
+.ans-inner{padding:12px 18px 14px;border-top:1px solid var(--border)}
+.ans-correct{display:flex;align-items:flex-start;gap:8px;background:#4ade8012;border:1px solid #4ade8025;border-radius:var(--r2);padding:10px 14px;margin-bottom:10px}
+.ans-ic{color:var(--succ);font-size:15px;flex-shrink:0;margin-top:1px}
+.ans-txt{font-size:13px;color:var(--text);font-weight:500;line-height:1.5}
+.ans-wrongs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}
+.ans-w{padding:6px 10px;border-radius:var(--r3);font-size:12px;color:var(--danger);background:#f8717110;border:1px solid #f8717125;text-decoration:line-through;opacity:.7}
+.qactions{display:flex;gap:7px;margin-top:11px}
+.btn{padding:6px 14px;border-radius:var(--r2);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.btn-ol{background:transparent;border-color:var(--border2);color:var(--text2)}.btn-ol:hover{background:var(--bg4);color:var(--text)}
+.btn-g{background:#4ade8018;border-color:var(--succ);color:var(--succ)}.btn-g:hover{background:#4ade8028}
+.btn-r{background:#f8717118;border-color:var(--danger);color:var(--danger)}.btn-r:hover{background:#f8717128}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+/* QUIZ */
+#quiz-view{display:none}
+.qz-setup{max-width:560px;margin:32px auto;padding:0 24px}
+.qzs-title{font-size:22px;font-weight:700;margin-bottom:5px}
+.qzs-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.qzs-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:10px}
+.qzs-lbl{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px}
+.qzs-opts{display:flex;flex-wrap:wrap;gap:7px}
+.qo{padding:6px 14px;border-radius:999px;border:1px solid var(--border2);font-size:12px;cursor:pointer;color:var(--text2);background:transparent;transition:all .15s;font-family:'Sora',sans-serif;font-weight:500}
+.qo.on{background:var(--acc);color:#0b0e17;border-color:var(--acc)}
+.qo:hover:not(.on){background:var(--bg3);color:var(--text)}
+.start-btn{width:100%;padding:12px;border-radius:var(--r);background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0e17;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none;margin-top:8px;transition:opacity .15s}
+.start-btn:hover{opacity:.9}
+.quiz-wrap{max-width:680px;margin:0 auto;padding:24px}
+.qz-topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.qz-prog-track{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.qz-prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s}
+.qz-frac{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap}
+.qz-sc-row{display:flex;gap:8px;margin-bottom:16px}
+.qz-sc{flex:1;padding:8px 10px;border-radius:var(--r2);text-align:center;font-size:10px}
+.qz-sc.g{background:#4ade8012;color:var(--succ);border:1px solid #4ade8025}
+.qz-sc.r{background:#f8717112;color:var(--danger);border:1px solid #f8717125}
+.qz-sc.n{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.qz-sc .sn{font-size:20px;font-weight:700;display:block;font-family:'JetBrains Mono',monospace}
+.qz-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:22px;margin-bottom:14px}
+.qz-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.qz-num-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:600}
+.qz-tag-lbl{font-size:10px;padding:2px 8px;border-radius:4px;background:#818cf815;color:var(--acc);font-weight:600}
+.qz-q{font-size:15px;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:18px}
+.qz-opts{display:flex;flex-direction:column;gap:7px}
+.qz-opt{padding:11px 16px;border-radius:var(--r2);border:1px solid var(--border2);cursor:pointer;font-size:13px;color:var(--text2);background:var(--bg3);transition:all .18s;text-align:left;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:10px;width:100%}
+.qz-opt:hover:not(:disabled){border-color:var(--acc);color:var(--text);background:var(--bg4)}
+.qz-opt:disabled{cursor:default}
+.qz-opt.correct{background:#4ade8015;border-color:var(--succ);color:var(--succ)}
+.qz-opt.wrong{background:#f8717115;border-color:var(--danger);color:var(--danger);opacity:.6;text-decoration:line-through}
+.qz-opt.sel-wrong{background:#f8717115;border-color:var(--danger);color:var(--danger)}
+.opt-let{width:24px;height:24px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.qz-fb{padding:10px 14px;border-radius:var(--r2);margin-top:12px;font-size:13px;font-weight:500;display:none}
+.qz-fb.show{display:block}
+.qz-fb.ok{background:#4ade8015;border:1px solid #4ade8030;color:var(--succ)}
+.qz-fb.no{background:#f8717115;border:1px solid #f8717130;color:var(--danger)}
+.qz-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.btn-acc{background:var(--acc);color:#0b0e17;border-color:var(--acc);font-size:13px;padding:8px 20px}
+.btn-acc:hover{background:#a5b4fc}
+.btn-skip{background:transparent;border-color:var(--border2);color:var(--text2);font-size:13px;padding:8px 16px}
+.btn-skip:hover{background:var(--bg4);color:var(--text)}
+.qz-result{max-width:560px;margin:32px auto;padding:0 24px;text-align:center}
+.res-pct{font-size:72px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:6px}
+.res-lbl{font-size:14px;color:var(--text2);margin-bottom:22px}
+.res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.res-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.res-box .n{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.res-box .l{font-size:11px;color:var(--text3);margin-top:2px}
+.res-mistakes{text-align:left;margin-bottom:20px}
+.rm-title{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text2)}
+.rm-item{background:var(--bg2);border:1px solid #f8717120;border-radius:var(--r2);padding:10px 14px;margin-bottom:7px}
+.rm-q{font-size:13px;color:var(--text);margin-bottom:5px;font-weight:500}
+.rm-yours{font-size:12px;color:var(--danger);margin-bottom:2px}
+.rm-corr{font-size:12px;color:var(--succ)}
+.btn-restart{padding:10px 22px;border-radius:var(--r);background:var(--acc);color:#0b0e17;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;margin-right:8px}
+.btn-back{padding:10px 18px;border-radius:var(--r);background:transparent;color:var(--text2);font-family:'Sora',sans-serif;font-size:14px;cursor:pointer;border:1px solid var(--border2)}
+.btn-back:hover{background:var(--bg3);color:var(--text)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--text);font-size:18px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:90}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger{display:block}
+  .overlay.show{display:block}
+  .content{padding:14px}
+  .topbar{padding:8px 12px;gap:8px}
+  .chips{display:none}
+  .mode-switch{display:none}
+  .hero{padding:18px 14px 14px}
+  .hero::after{display:none}
+  .htitle{font-size:18px}
+  .ans-wrongs{grid-template-columns:1fr}
+  .quiz-wrap{padding:14px}
+  .res-grid{grid-template-columns:1fr 1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="slogo"><div class="logo-box">C++ <span>/ Dasturlash</span></div></div>
+  <div class="stitle">Mavzular</div>
+  <nav id="nav-list"></nav>
+  <div class="sbottom">
+    <div class="prog-label"><span>O'rganish progressi</span><span id="pct">0%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="pbar"></div></div>
+    <div class="sstat-row">
+      <div class="sstat g"><span class="n" id="sk">0</span>bildim</div>
+      <div class="sstat r"><span class="n" id="su">0</span>bilmadim</div>
+      <div class="sstat b"><span class="n" id="ss">130</span>jami</div>
+    </div>
+  </div>
+</aside>
+<div class="main">
+  <div class="hero">
+    <button class="hamburger" onclick="openSidebar()">☰</button>
+    <div class="hlabel">Namangan DTU · 2025–2026 · Yakuniy nazorat</div>
+    <div class="htitle">Dasturlash — C++ Asoslari</div>
+    <div class="hsub">1-kurs imtihon tayyorgarlik · 130 ta test savoli</div>
+    <div class="hstats">
+      <div class="hst"><div class="hst-v b">130</div><div class="hst-l">Jami savol</div></div>
+      <div class="hst"><div class="hst-v g" id="hkn">0</div><div class="hst-l">Bildim</div></div>
+      <div class="hst"><div class="hst-v r" id="hun">0</div><div class="hst-l">Bilmadim</div></div>
+    </div>
+  </div>
+  <div class="topbar">
+    <button class="hamburger" onclick="openSidebar()">☰</button>
+    <div class="srchwrap">
+      <span class="srch-ic">🔍</span>
+      <input type="text" id="search" placeholder="Savol qidirish..." oninput="renderStudy()">
+    </div>
+    <div class="chips">
+      <button class="chip ca" id="chip-all" onclick="setFilter('all')">Hammasi</button>
+      <button class="chip" id="chip-unseen" onclick="setFilter('unseen')">Ko'rilmagan</button>
+      <button class="chip" id="chip-unknown" onclick="setFilter('unknown')">Bilmadim</button>
+      <button class="chip" id="chip-known" onclick="setFilter('known')">Bildim</button>
+    </div>
+    <div class="mode-switch">
+      <button class="msbtn active" id="ms-study" onclick="switchMode('study')">📚 O'rganish</button>
+      <button class="msbtn" id="ms-quiz" onclick="switchMode('quiz')">🎯 Quiz</button>
+    </div>
+  </div>
+  <!-- STUDY VIEW -->
+  <div id="study-view">
+    <div class="content">
+      <div class="sechdr">
+        <div><div class="sectit" id="sec-title">Barcha savollar</div><div class="secsub">Javobni ko'rish uchun savolga bosing</div></div>
+        <div class="cbadge" id="cbadge">130 ta</div>
+      </div>
+      <div class="qgrid" id="qlist"></div>
+    </div>
+  </div>
+  <!-- QUIZ VIEW -->
+  <div id="quiz-view">
+    <div id="qz-setup-div">
+      <div class="qz-setup">
+        <div class="qzs-title">🎯 Quiz rejimi</div>
+        <div class="qzs-sub">Mavzu va savollar sonini tanlang, bilimingizni sinab ko'ring!</div>
+        <div class="qzs-card"><div class="qzs-lbl">Mavzu tanlang</div><div class="qzs-opts" id="qz-topic-opts"></div></div>
+        <div class="qzs-card">
+          <div class="qzs-lbl">Savollar soni</div>
+          <div class="qzs-opts" id="cnt-opts">
+            <button class="qo" onclick="setQzCount(10,this)">10 ta</button>
+            <button class="qo on" onclick="setQzCount(20,this)">20 ta</button>
+            <button class="qo" onclick="setQzCount(30,this)">30 ta</button>
+            <button class="qo" onclick="setQzCount(50,this)">50 ta</button>
+            <button class="qo" onclick="setQzCount(9999,this)">Hammasi</button>
+          </div>
+        </div>
+        <div class="qzs-card">
+          <div class="qzs-lbl">Tartib</div>
+          <div class="qzs-opts" id="ord-opts">
+            <button class="qo on" onclick="setQzOrder('random',this)">🔀 Tasodifiy</button>
+            <button class="qo" onclick="setQzOrder('order',this)">📋 Ketma-ket</button>
+            <button class="qo" onclick="setQzOrder('unknown',this)">❌ Bilmaganlarim</button>
+          </div>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">🚀 Quizni boshlash</button>
+      </div>
+    </div>
+    <div id="qz-active-div" style="display:none">
+      <div class="quiz-wrap">
+        <div class="qz-topbar">
+          <button class="btn btn-ol btn-skip" onclick="endQuiz()">← Chiqish</button>
+          <div class="qz-prog-track"><div class="qz-prog-fill" id="qzpf"></div></div>
+          <div class="qz-frac" id="qzfrac">1/20</div>
+        </div>
+        <div class="qz-sc-row">
+          <div class="qz-sc g"><span class="sn" id="qzc">0</span>To'g'ri</div>
+          <div class="qz-sc r"><span class="sn" id="qzw">0</span>Xato</div>
+          <div class="qz-sc n"><span class="sn" id="qzs">0</span>O'tkazildi</div>
+        </div>
+        <div class="qz-card">
+          <div class="qz-meta"><div class="qz-num-lbl" id="qznl">Savol 1</div><div class="qz-tag-lbl" id="qztag">Mavzu</div></div>
+          <div class="qz-q" id="qzq">...</div>
+          <div class="qz-opts" id="qzopts"></div>
+          <div class="qz-fb" id="qzfb"></div>
+          <div class="qz-actions">
+            <button class="btn btn-skip" onclick="skipQ()">O'tkazib yuborish</button>
+            <button class="btn btn-acc" id="qznext" onclick="nextQ()" style="display:none">Keyingi →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="qz-result-div" style="display:none">
+      <div class="qz-result">
+        <div class="res-pct" id="respct">0%</div>
+        <div class="res-lbl" id="reslbl">Natija</div>
+        <div class="res-grid">
+          <div class="res-box"><div class="n" style="color:var(--succ)" id="resc">0</div><div class="l">To'g'ri</div></div>
+          <div class="res-box"><div class="n" style="color:var(--danger)" id="resw">0</div><div class="l">Xato</div></div>
+          <div class="res-box"><div class="n" style="color:var(--text2)" id="ress">0</div><div class="l">O'tkazildi</div></div>
+        </div>
+        <div class="res-mistakes" id="resmistakes"></div>
+        <button class="btn-restart" onclick="restartQuiz()">🔄 Qayta urinish</button>
+        <button class="btn-back" onclick="backToSetup()">← Sozlamalar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const Q=[
+  {t:"Asoslar",q:"Dastur (Programma) tushunchasiga berilgan eng to'g'ri ta'rifni ko'rsating.",a:"Kompyuter tushunadigan tilda yozilgan buyruqlar ketma-ketligi",w:["Kompyuterda matn yozish uchun mo'ljallangan vosita","Faqat matematik hisob-kitoblar to'plami","Internet tarmog'idagi ma'lumotlar yig'indisi"]},
+  {t:"Algoritmlar",q:"Algoritmning diskretlilik xossasi nimani anglatadi?",a:"Algoritm qadamlarga bo'lingan bo'lishi va har bir qadam chekli vaqtda tugashi",w:["Algoritm hamma uchun tushunarli bo'lishi","Algoritm har doim to'g'ri natija berishi","Algoritm grafik shaklda bo'lishi"]},
+  {t:"Ma'lumot turlari",q:"C++ tilida butun sonlarni e'lon qilish uchun qaysi ma'lumot turidan foydalaniladi?",a:"int",w:["float","char","bool"]},
+  {t:"Asoslar",q:"Dastur kodini mashina tiliga o'giruvchi maxsus dastur qanday ataladi?",a:"Kompilyator",w:["Drayver","Brauzer","Operatsion tizim"]},
+  {t:"C++ sintaksis",q:"C++ da #include <iostream> qatorining vazifasi nima?",a:"Kiritish va chiqarish oqimlari kutubxonasini ulash",w:["Matematik funksiyalarni yuklash","Dasturni tugatish","O'zgaruvchilarni e'lon qilish"]},
+  {t:"Algoritmlar",q:"Algoritmning \"Natijaviylik\" xossasi nima?",a:"Chekli qadamdan so'ng algoritm albatta natija berishi shart",w:["Algoritm juda tez ishlashi shart","Algoritm faqat musbat sonlar bilan ishlashi","Algoritmning uzunligi cheksiz bo'lishi"]},
+  {t:"Ma'lumot turlari",q:"C++ tilida simvollarni (belgilarni) saqlash uchun qaysi tur ishlatiladi?",a:"char",w:["double","long","string"]},
+  {t:"C++ sintaksis",q:"O'zgaruvchi nomi qaysi belgidan boshlanishi mumkin emas?",a:"Raqamdan",w:["Pastki chiziqdan (_)","Lotin harfidan","Katta harfdan"]},
+  {t:"C++ sintaksis",q:"C++ da ma'lumotlarni ekranga chiqarish operatorini ko'rsating.",a:"cout",w:["cin","scanf","get"]},
+  {t:"Ma'lumot turlari",q:"double ma'lumot turi xotiradan necha bayt joy egallaydi?",a:"8 bayt",w:["1 bayt","2 bayt","4 bayt"]},
+  {t:"Operatorlar",q:"C++ da \"Va\" (AND) mantiqiy amali qanday yoziladi?",a:"&&",w:["||","!","=="]},
+  {t:"Algoritmlar",q:"Algoritmni blok-sxema ko'rinishida tasvirlashda romb shakli nimani bildiradi?",a:"Shartni tekshirish (mantiqiy jarayon)",w:["Boshlanish va tugallanish","Ma'lumot kiritish","Hisoblash jarayoni"]},
+  {t:"C++ sintaksis",q:"cin >> x; operatorining vazifasi nima?",a:"Klaviatura orqali x o'zgaruvchisiga qiymat kiritish",w:["x o'zgaruvchisini ekranga chiqarish","x ning qiymatini o'chirish","Dasturni to'xtatish"]},
+  {t:"C++ sintaksis",q:"C++ tilida bir qatorli izoh qaysi belgi bilan boshlanadi?",a:"//",w:["/*","@","endl"]},
+  {t:"Operatorlar",q:"a = 15 % 4; amali bajarilganda a o'zgaruvchisi qanday qiymat oladi?",a:"3",w:["3.75","2","1"]},
+  {t:"C++ sintaksis",q:"O'zgarmas miqdorlarni (konstanta) e'lon qilish uchun qaysi kalit so'z ishlatiladi?",a:"const",w:["static","void","define"]},
+  {t:"Ma'lumot turlari",q:"C++ da bool ma'lumot turi qanday qiymatlarni qabul qiladi?",a:"true yoki false",w:["Faqat butun sonlar","Ixtiyoriy belgilar","Faqat manfiy sonlar"]},
+  {t:"Algoritmlar",q:"Algoritmning \"Tushunarlilik\" xossasi kimga yo'naltirilgan?",a:"Algoritmni bajaruvchi ijrochiga",w:["Faqat kompyuterga","Faqat dasturchiga","Monitorga"]},
+  {t:"Asoslar",q:"Dasturlash tillari evolyutsiyasida birinchi paydo bo'lgan til qaysi?",a:"Mashina tili",w:["Assambler tili","C tili","Python tili"]},
+  {t:"Ma'lumot turlari",q:"C++ da haqiqiy sonlar (vergulli) uchun qaysi tur qulayroq?",a:"float yoki double",w:["int","long long","unsigned int"]},
+  {t:"C++ sintaksis",q:"C++ da main() funksiyasi nima uchun kerak?",a:"Dasturning bajarilishi shu funksiyadan boshlanadi",w:["Faqat matematik hisoblar uchun","Ma'lumot kiritish uchun","Xatolarni tuzatish uchun"]},
+  {t:"Asoslar",q:"Xotira strukturasi deganda nimani tushunasiz?",a:"Ma'lumotlarning xotirada joylashish va tashkil etilish usuli",w:["Faqat qattiq diskning hajmi","Kompyuterning protsessor tezligi","Monitor piksellari soni"]},
+  {t:"C++ sintaksis",q:"cout << \"Salom\" << endl; qatoridagi endl vazifasi nima?",a:"Kursorning yangi qatorga o'tishini ta'minlash",w:["Dasturni tugatish","Ma'lumotni o'chirish","Xatoni tekshirish"]},
+  {t:"Operatorlar",q:"C++ da mantiqiy \"Yoki\" (OR) amali qaysi?",a:"||",w:["&&","!=","&"]},
+  {t:"Asoslar",q:"Arifmetik-mantiqiy qurilma (ALU) qayerda joylashgan?",a:"Markaziy protsessorda",w:["Operativ xotirada","Sichqonchada","Klaviatura platasida"]},
+  {t:"Ma'lumot turlari",q:"Dasturda int x = 10.5; deb yozilsa nima sodir bo'ladi?",a:"x o'zgaruvchisi 10 qiymatini oladi (qoldiq qismi tashlab yuboriladi)",w:["Dastur xato berib to'xtaydi","x o'zgaruvchisi 11 qiymatini oladi","x o'zgaruvchisi 10.5 qiymatini saqlab qoladi"]},
+  {t:"Asoslar",q:"Mashina arifmetikasida sonlar asosan qaysi sanoq sistemasida qayta ishlanadi?",a:"Ikkilik sanoq sistemasida",w:["O'nlik sanoq sistemasida","Sakkizlik sanoq sistemasida","O'n oltilik sanoq sistemasida"]},
+  {t:"Matematik funksiyalar",q:"sqrt(x) funksiyasi nima uchun ishlatiladi?",a:"x ning kvadrat ildizini hisoblash uchun",w:["x ning kvadratini hisoblash uchun","x ning modulini hisoblash uchun","x ni darajaga ko'tarish uchun"]},
+  {t:"Operatorlar",q:"C++ da mantiqiy \"Inkor\" (NOT) amali qaysi?",a:"!",w:["~","<>","not"]},
+  {t:"Operatorlar",q:"a != b ifodasi nimani anglatadi?",a:"a ning qiymati b ga teng emas",w:["a ning qiymati b dan katta","a va b bir-biriga teng","a va b ning ko'paytmasi"]},
+  {t:"Asoslar",q:"Dastur xatolarini qidirish va tuzatish jarayoni nima deb ataladi?",a:"Otladka (Debugging)",w:["Kompilyatsiya","Installyatsiya","Arxivlash"]},
+  {t:"Ma'lumot turlari",q:"C++ da long long turi nima uchun ishlatiladi?",a:"Juda katta butun sonlarni saqlash uchun",w:["Faqat manfiy sonlar uchun","Simvollarni saqlash uchun","Mantiqiy amallar uchun"]},
+  {t:"Asoslar",q:"Sanoq sistemalari qanday turlarga bo'linadi?",a:"Pozitsion va nopozitsion",w:["Faqat o'nlik","Oddiy va murakkab","Sun'iy va tabiiy"]},
+  {t:"Algoritmlar",q:"Algoritmning berilish usullari qaysilar?",a:"Matnli, blok-sxemali, dasturiy",w:["Faqat og'zaki","Faqat matematik formulalar orqali","Faqat rasmlar orqali"]},
+  {t:"Matematik funksiyalar",q:"pow(2, 3) funksiyasining natijasi necha bo'ladi?",a:"8",w:["6","5","9"]},
+  {t:"Operatorlar",q:"C++ tilida \"Yoki\" mantiqiy amali natijasi qachon yolg'on (false) bo'ladi?",a:"Har ikkala shart yolg'on bo'lganda",w:["Kamida bir shart rost bo'lganda","Har ikkala shart rost bo'lganda","Shartlardan biri rost bo'lganda"]},
+  {t:"Visual Studio",q:"Visual Studio dasturida yangi loyiha yaratish uchun qaysi menyu tanlanadi?",a:"File -> New -> Project",w:["Edit -> New","View -> Project","Build -> Create"]},
+  {t:"Matematik funksiyalar",q:"C++ da qaysi kutubxona matematik funksiyalar bilan ishlash uchun kerak?",a:"<cmath>",w:["<vector>","<fstream>","<algorithm>"]},
+  {t:"Matematik funksiyalar",q:"abs(x) funksiyasining vazifasi nima?",a:"x ning modulini (absolyut qiymatini) hisoblash",w:["x ni yaxlitlash","x ni kvadratga ko'tarish","x dan ildiz chiqarish"]},
+  {t:"Algoritmlar",q:"Dasturning mantiqiy tuzilishini tushunish uchun qaysi usul eng qulay?",a:"Blok-sxema orqali tasvirlash",w:["Dastur kodini ovoz chiqarib o'qish","Faqat natijani ko'rish","Kompyuterni o'chirib yoqish"]},
+  {t:"Sikllar",q:"Sikl (Takrorlanuvchi jarayon) nima?",a:"Dasturdagi ma'lum bir qadamlarning qayta-qayta bajarilishi",w:["Dasturning bir marta ishlashi","Dasturning xato berishi","Faqat ma'lumot kiritish qismi"]},
+  {t:"Ma'lumot turlari",q:"float va double ning asosiy farqi nimada?",a:"Double ko'proq xotira egallaydi va aniqligi yuqoriroq",w:["Float butun son, Double haqiqiy son","Hech qanday farqi yo'q","Float faqat musbat sonlarni saqlaydi"]},
+  {t:"Asoslar",q:"Kompyuterda masala yechishning birinchi bosqichi qaysi?",a:"Masalaning qo'yilishi (Tahlil qilish)",w:["Dasturni yozish","Natijani chop etish","Kompilyatsiya qilish"]},
+  {t:"Asoslar",q:"Tabiiy tillarga misol keltiring.",a:"O'zbek tili, ingliz tili",w:["C++, Java","Blok-sxemalar","Mashina kodi"]},
+  {t:"C++ sintaksis",q:"C++ da void so'zi nimani anglatadi?",a:"Qiymat qaytarmaydigan (bo'sh) ma'lumot turi",w:["Butun son turi","Haqiqiy son turi","Dasturning boshlanishi"]},
+  {t:"Shartli operatorlar",q:"C++ da if operatorining umumiy ko'rinishi qanday?",a:"if (shart) { operatorlar; }",w:["if shart then operatorlar;","if {shart} [operatorlar];","shart? if : else;"]},
+  {t:"Shartli operatorlar",q:"else operatori qaysi holatda ishlaydi?",a:"if dagi shart yolg'on (false) bo'lganda",w:["if dagi shart rost (true) bo'lganda","Har doim","Hech qachon ishlamaydi"]},
+  {t:"Shartli operatorlar",q:"switch operatori nima uchun ishlatiladi?",a:"Bir nechta variant ichidan mosini tanlash uchun",w:["Faqat takrorlash uchun","Dasturni to'xtatish uchun","Matematik ildiz chiqarish uchun"]},
+  {t:"Shartli operatorlar",q:"switch operatorida har bir case dan keyin odatda qaysi operator yoziladi?",a:"break",w:["continue","return","default"]},
+  {t:"Sikllar",q:"for sikli qanday qismlardan iborat?",a:"Initsializatsiya, shart, inkrement (o'zgarish)",w:["Faqat shartdan","Faqat initsializatsiyadan","Dastur nomi va tugashidan"]},
+  {t:"Sikllar",q:"while sikli qanday ishlaydi?",a:"Avval shartni tekshiradi, keyin sikl tanasini bajaradi",w:["Avval sikl tanasini bajaradi, keyin shartni tekshiradi","Shartni tekshirmasdan ishlaydi","Faqat bir marta bajariladi"]},
+  {t:"Sikllar",q:"do-while siklining while dan asosiy farqi nimada?",a:"Sikl tanasi kamida bir marta bajariladi",w:["Shart avval tekshiriladi","Tezroq ishlaydi","Xotiradan kam joy oladi"]},
+  {t:"Sikllar",q:"for (int i=0; i<5; i++) sikli necha marta aylanadi?",a:"5 marta",w:["4 marta","6 marta","Cheksiz"]},
+  {t:"Sikllar",q:"Sikl ichida break operatori bajarilsa nima sodir bo'ladi?",a:"Sikl darhol to'xtatiladi va undan keyingi qatorga o'tiladi",w:["Siklning keyingi qadamiga o'tiladi","Dastur butunlay o'chadi","Kompilyatsiya xatosi beradi"]},
+  {t:"Sikllar",q:"Sikl ichida continue operatori bajarilsa nima sodir bo'ladi?",a:"Siklning joriy qadami to'xtab, keyingi qadamiga o'tiladi",w:["Sikl butunlay to'xtatiladi","Dastur boshidan boshlanadi","Hech narsa o'zgarmaydi"]},
+  {t:"Algoritmlar",q:"Chiziqli algoritm nima?",a:"Amallar ketma-ket, hech qanday shartsiz bajariladigan algoritm",w:["Shartga qarab yo'nalish o'zgaradigan algoritm","Amallar takrorlanadigan algoritm","Blok-sxemasi yo'q algoritm"]},
+  {t:"Algoritmlar",q:"Tarmoqlanuvchi algoritm nima?",a:"Ma'lum bir shartga ko'ra bajarilish yo'nalishi o'zgaradigan algoritm",w:["Faqat bitta chiziq bo'yicha ketadigan algoritm","Hech qachon tugamaydigan algoritm","Faqat matematik formulali algoritm"]},
+  {t:"Shartli operatorlar",q:"switch operatorida default bo'limining vazifasi nima?",a:"Hech bir case mos kelmaganda bajariladigan qism",w:["Birinchi bo'lib bajariladigan qism","Xatoni chiqaradigan qism","Siklni to'xtatish uchun"]},
+  {t:"Operatorlar",q:"C++ da a == b va a = b farqi nimada?",a:"== taqqoslash (tenglikni tekshirish), = qiymat berish",w:["Ikkalasi ham bir xil","= taqqoslash, == qiymat berish","== matematik qo'shish"]},
+  {t:"Shartli operatorlar",q:"int a=5, b=10; if (a < b) cout << \"Katta\"; else cout << \"Kichik\"; natijasi nima?",a:"Katta",w:["Kichik","5","10"]},
+  {t:"Operatorlar",q:"Mantiqiy ifoda: (5 > 3) && (2 < 1) ning natijasi nima?",a:"false (0)",w:["true (1)","Xatolik","5"]},
+  {t:"Operatorlar",q:"Mantiqiy ifoda: (5 > 3) || (2 < 1) ning natijasi nima?",a:"true (1)",w:["false (0)","Xatolik","2"]},
+  {t:"Sikllar",q:"Cheksiz sikl deganda nimani tushunasiz?",a:"Sikl sharti har doim rost bo'lib, to'xtamaydigan jarayon",w:["Faqat 100 marta aylanadigan sikl","do-while sikli","Xato yozilgan funksiya"]},
+  {t:"Sikllar",q:"while (x != 0) sharti qachon to'xtaydi?",a:"x ning qiymati 0 ga teng bo'lganda",w:["x ning qiymati 1 ga teng bo'lganda","x musbat bo'lganda","Hech qachon to'xtamaydi"]},
+  {t:"Sikllar",q:"int i=10; do { i++; } while (i < 5); sikli necha marta ishlaydi?",a:"1 marta",w:["0 marta","5 marta","Cheksiz"]},
+  {t:"Shartli operatorlar",q:"C++ da bir nechta shartni ketma-ket tekshirish uchun qaysi strukturadan foydalaniladi?",a:"if - else if - else",w:["for - while","switch - default","only if"]},
+  {t:"Algoritmlar",q:"Tarmoqlanuvchi jarayonlar blok-sxemasida shart operatori qanday ko'rinishda bo'ladi?",a:"Romb",w:["Parallelogramm","To'g'ri to'rtburchak","Ellips"]},
+  {t:"Operatorlar",q:"a %= b amali nimaga teng?",a:"a = a % b",w:["a = a / b","a = a * b","a = b % a"]},
+  {t:"Visual Studio",q:"Dasturda xato chiqsa, Visual Studio'da xatolar ro'yxati qaysi oynada ko'rinadi?",a:"Error List",w:["Solution Explorer","Toolbox","Properties"]},
+  {t:"Visual Studio",q:"Visual Studio'da dasturni qadam-baqadam tekshirish uchun qaysi tugma ishlatiladi?",a:"F10 yoki F11",w:["F5","F1","Alt+F4"]},
+  {t:"Sikllar",q:"Sikl ichida o'zgaruvchining qiymati o'zgarmasa nima bo'ladi?",a:"Agar shart rost bo'lsa, cheksiz sikl yuzaga keladi",w:["Sikl darhol to'xtaydi","Kompilyator xato beradi","Operatsion tizim o'chib qoladi"]},
+  {t:"Operatorlar",q:"C++ da int a = 5; cout << ++a; natijasi necha?",a:"6",w:["5","4","7"]},
+  {t:"Operatorlar",q:"C++ da int a = 5; cout << a++; natijasi necha?",a:"5",w:["6","4","7"]},
+  {t:"Visual Studio",q:"Visual Studio muhiti vazifalariga nimalar kiradi?",a:"Kod yozish, tahrirlash, kompilyatsiya qilish va xatolarni tuzatish",w:["Faqat rasm chizish","Faqat internetga kirish","Faqat video tahrirlash"]},
+  {t:"Sikllar",q:"for (int i=1; i<=10; i++) siklida i ning oxirgi qiymati (sikl tugagach) necha bo'ladi?",a:"11",w:["10","9","1"]},
+  {t:"Operatorlar",q:"Mantiqiy ifoda natijasi rost bo'lsa, son ko'rinishida qanday ifodalanadi?",a:"1",w:["0","-1","100"]},
+  {t:"Operatorlar",q:"Mantiqiy ifoda natijasi yolg'on bo'lsa, son ko'rinishida qanday ifodalanadi?",a:"0",w:["1","-1","Xato"]},
+  {t:"Ma'lumot turlari",q:"int x = 5, y = 2; float z = x / y; z ning qiymati necha bo'ladi?",a:"2",w:["2.5","3","2.0"]},
+  {t:"C++ sintaksis",q:"O'zgaruvchilarni e'lon qilish (Declaration) deganda nimani tushunasiz?",a:"O'zgaruvchiga nom berish va uning turini aniqlash",w:["O'zgaruvchining qiymatini o'chirish","O'zgaruvchini ekranga chiqarish","Dasturni saqlash"]},
+  {t:"Algoritmlar",q:"if (x > 0) y = 1; else if (x < 0) y = -1; else y = 0; Bu qanday algoritm?",a:"Tarmoqlanuvchi",w:["Chiziqli","Takrorlanuvchi","Murakkab chiziqli"]},
+  {t:"Operatorlar",q:"C++ da matematik amallarning bajarilish tartibi qanday?",a:"Matematika qoidalari bilan bir xil (avval qavslar, ko'paytirish/bo'lish...)",w:["Faqat chapdan o'ngga","Faqat o'ngdan chapga","Ixtiyoriy ravishda"]},
+  {t:"Operatorlar",q:"cout << 5 + 3 * 2; natijasi necha?",a:"11",w:["16","10","13"]},
+  {t:"Massivlar",q:"C++ da int a[10]; yozuvi nimani anglatadi?",a:"10 ta butun sondan iborat massiv e'lon qilish",w:["a o'zgaruvchisiga 10 ni qo'shish","Massivning 10-elementini o'chirish","10 marta takrorlanadigan sikl"]},
+  {t:"Asoslar",q:"Dasturlash tili evolyutsiyasida \"Yuqori darajali tillar\" nima uchun yaratilgan?",a:"Inson uchun tushunarli va yozish oson bo'lishi uchun",w:["Faqat tezlikni oshirish uchun","Kompyuter xotirasini tejash uchun","Faqat o'yinlar yaratish uchun"]},
+  {t:"Operatorlar",q:"C++ tilida modul operatori (%) faqat qaysi sonlar ustida ishlaydi?",a:"Butun sonlar (int)",w:["Haqiqiy sonlar (float)","Faqat musbat sonlar","Barcha sonlar"]},
+  {t:"Shartli operatorlar",q:"if (true) bo'lsa, shart bajariladimi?",a:"Ha",w:["Yo'q","Faqat xato beradi","Ba'zan"]},
+  {t:"Asoslar",q:"Dastur strukturasi deganda nima tushuniladi?",a:"Kutubxonalar ulanishi, main funksiyasi va operatorlar tartibi",w:["Faqat ranglar","Monitor dizayni","Faqat o'zgaruvchilar nomi"]},
+  {t:"Algoritmlar",q:"Algoritm tushunchasiga eng sodda ta'rifni ko'rsating.",a:"Qo'yilgan maqsadga erishish uchun bajariladigan amallar ketma-ketligi",w:["Kompyuterning ichki qurilmasi","Faqat matematik formula","Monitor yuzasidagi rasm"]},
+  {t:"Massivlar",q:"Massiv (Array) nima?",a:"Bir xil turdagi ma'lumotlarning tartiblangan to'plami",w:["Har xil turdagi o'zgaruvchilar yig'indisi","Faqat bitta sondan iborat o'zgaruvchi","Kompyuter xotirasining nomi"]},
+  {t:"Massivlar",q:"Massiv elementlarining indeksi (tartib raqami) nechadan boshlanadi?",a:"0 dan",w:["1 dan","-1 dan","Ixtiyoriy sondan"]},
+  {t:"Massivlar",q:"int a[5] = {1, 2, 3, 4, 5}; bo'lsa, a[2] ning qiymati necha?",a:"3",w:["2","1","4"]},
+  {t:"Massivlar",q:"Massivning 10-elementiga murojaat qilish qanday yoziladi?",a:"a[9]",w:["a[10]","a(10)","a{9}"]},
+  {t:"Massivlar",q:"Ikki o'lchovli massivni (matritsani) qanday e'lon qilish mumkin?",a:"int a[3][4];",w:["int a[3,4];","int a[3][4][2];","array a(3,4);"]},
+  {t:"Saralash",q:"Massiv elementlarini saralash (Sorting) nima?",a:"Elementlarni ma'lum bir tartibda (o'sish yoki kamayish) joylashtirish",w:["Elementlarni xotiradan o'chirish","Elementlarni ekranga chiqarish","Massiv hajmini kattalashtirish"]},
+  {t:"Saralash",q:"Pufaksimon (Bubble sort) saralash algoritmining mohiyati nimada?",a:"Qo'shni elementlarni solishtirish va o'rnini almashtirish",w:["Eng kichik elementni birinchi o'ringa qo'yish","Massivni ikkiga bo'lib saralash","Tasodifiy elementni tanlash"]},
+  {t:"Saralash",q:"Tanlash usuli (Selection sort) bilan saralashda nima qilinadi?",a:"Eng kichik (yoki eng katta) elementni topib, mos o'ringa qo'yish",w:["Elementlarni pufaksimon almashtirish","Massivni o'rtasidan bo'lish","Faqat birinchi elementni saralash"]},
+  {t:"Saralash",q:"Piramida (Heap) usulida saralash nimaga asoslangan?",a:"Daraxtsimon ma'lumotlar strukturasiga (Heap)",w:["Chiziqli qidiruvga","Tasodifiy sonlarga","Faqat o'nlik sanoq sistemasiga"]},
+  {t:"Funksiyalar",q:"Funksiya nima?",a:"Ma'lum bir vazifani bajaruvchi, nomi bilan chaqiriladigan mustaqil kod bloki",w:["Faqat matematik sinus funksiyasi","Dastur ichidagi xatolik","Faqat o'zgaruvchilar nomi"]},
+  {t:"Funksiyalar",q:"Funksiyani e'lon qilish (Prototype) nima uchun kerak?",a:"Kompilyatorga funksiya nomi, turi va parametrlari haqida ma'lumot berish uchun",w:["Funksiyani darhol bajarish uchun","Funksiyani o'chirish uchun","Kutubxonani ulash uchun"]},
+  {t:"Funksiyalar",q:"Funksiya natijasini qaytarish uchun qaysi kalit so'zdan foydalaniladi?",a:"return",w:["give","get","void"]},
+  {t:"Funksiyalar",q:"Funksiyaga uzatiladigan qiymatlar nima deb ataladi?",a:"Parametrlar (yoki argumentlar)",w:["O'zgaruvchilar","Indekslar","Kalitlar"]},
+  {t:"Funksiyalar",q:"void turidagi funksiya nima qaytaradi?",a:"Hech qanday qiymat qaytarmaydi",w:["Butun son qaytaradi","Mantiqiy qiymat qaytaradi","Faqat 0 qaytaradi"]},
+  {t:"Algoritmlar",q:"Iteratsion algoritmlar nima?",a:"Ma'lum bir qadamlarni takrorlash orqali natijaga yaqinlashadigan algoritmlar",w:["Faqat bir marta ishlaydigan algoritmlar","Dasturni o'chiradigan algoritmlar","Grafik chizadigan algoritmlar"]},
+  {t:"Sikllar",q:"Takrorlanishlar soni oldindan ma'lum bo'lmagan algoritmlar qaysi sikl bilan amalga oshiriladi?",a:"while yoki do-while",w:["for","if","switch"]},
+  {t:"Algoritmlar",q:"Sonli qatorlar yig'indisini berilgan aniqlikda hisoblashda nimadan foydalaniladi?",a:"Sikl va yaqinlashish sharti (epsilon)",w:["Faqat bitta qo'shish amali","Faqat ko'paytirish","Hech narsa kerak emas"]},
+  {t:"C++ sintaksis",q:"C++ da int main() funksiyasi oxirida return 0; nimani anglatadi?",a:"Dastur muvaffaqiyatli yakunlanganligini operatsion tizimga bildirish",w:["Dasturni boshidan boshlashni","Xatoni qaytarishni","Hech narsani anglatmaydi"]},
+  {t:"Massivlar",q:"Massivni e'lon qilishda uning hajmi qanday bo'lishi kerak?",a:"O'zgarmas butun son (konstanta)",w:["Haqiqiy son","Ixtiyoriy o'zgaruvchi","Manfiy son"]},
+  {t:"Massivlar",q:"Statistik hisoblashlarda massivlardan foydalanishning afzalligi nimada?",a:"Katta hajmdagi ma'lumotlarni bitta nom ostida saqlash va qayta ishlash qulayligi",w:["Dastur hajmini kichraytirishi","Kompyuter tezligini oshirishi","Faqat rasm chizish qulayligi"]},
+  {t:"Massivlar",q:"Massiv elementlarini kiritish uchun qaysi sikldan foydalanish qulayroq?",a:"for",w:["while","do-while","if"]},
+  {t:"Massivlar",q:"int a[10][10]; massivda jami nechta element bor?",a:"100 ta",w:["10 ta","20 ta","110 ta"]},
+  {t:"Saralash",q:"Saralash algoritmlarining samaradorligi qanday o'lchanadi?",a:"Vaqt va xotira murakkabligi (Big O) orqali",w:["Dasturning qatorlar soni orqali","Monitorning yorqinligi orqali","Dasturchining ish haqi orqali"]},
+  {t:"Funksiyalar",q:"Funksiyada return operatoridan keyin yozilgan kodlar bajariladimi?",a:"Yo'q, funksiya return bilan yakunlanadi",w:["Ha, hammasi bajariladi","Faqat bir martasi bajariladi","Kompilyatorga bog'liq"]},
+  {t:"Massivlar",q:"Ikki o'lchovli massiv elementlarini ekranga chiqarish uchun nechta sikl kerak bo'ladi?",a:"Ikkita (ichma-ich joylashgan)",w:["Bitta","Uchta","Sikl shart emas"]},
+  {t:"Massivlar",q:"int a[3][2] = {{1,2}, {3,4}, {5,6}}; bo'lsa, a[1][0] necha?",a:"3",w:["1","2","4"]},
+  {t:"Saralash",q:"Ma'lumotlarni saralashning eng tezkor usullaridan biri qaysi (o'rtacha holatda)?",a:"Quick Sort (Tezkor saralash)",w:["Bubble Sort","Selection Sort","Barcha usullar bir xil tezlikda"]},
+  {t:"Asoslar",q:"Strukturalangan ma'lumotlar nima?",a:"Ma'lum bir tartibga va tuzilishga ega bo'lgan ma'lumotlar (massivlar, strukturalar)",w:["Tartibsiz raqamlar","Faqat bitta son","Faqat matnli ma'lumotlar"]},
+  {t:"Funksiyalar",q:"Funksiya tanasi (Body) qanday belgilar ichida yoziladi?",a:"{ }",w:["( )","[ ]","< >"]},
+  {t:"Massivlar",q:"O'zgarmas massiv e'lon qilish qanday bo'ladi?",a:"const int a[5] = {1,2,3,4,5};",w:["static int a[5];","int const a[5];","massiv a[5] = const;"]},
+  {t:"Funksiyalar",q:"void xabar() funksiyasi qanday chaqiriladi?",a:"xabar();",w:["cout << xabar;","xabar;","void xabar;"]},
+  {t:"Funksiyalar",q:"Massivni funksiyaga argument sifatida uzatish mumkinmi?",a:"Ha",w:["Yo'q","Faqat bitta elementini uzatish mumkin","Faqat void funksiyalarda mumkin"]},
+  {t:"Funksiyalar",q:"Funksiya ichida boshqa funksiyani chaqirish mumkinmi?",a:"Ha",w:["Yo'q","Faqat bir marta mumkin","Faqat matematik funksiyalarni mumkin"]},
+  {t:"Massivlar",q:"int a[5] = {0}; barcha elementlarni qanday qiymat bilan to'ldiradi?",a:"0 bilan",w:["Tasodifiy sonlar bilan","Faqat birinchi element 0 bo'ladi","Xato beradi"]},
+  {t:"Funksiyalar",q:"Dasturda ko'p marta takrorlanadigan kodlarni qanday qisqartirish mumkin?",a:"Funksiyalardan foydalanish orqali",w:["Ko'p marta cout yozish orqali","Faqat if ishlatish orqali","Hech qanday yo'li yo'q"]},
+  {t:"Massivlar",q:"Massiv elementlarini teskari tartibda chiqarish uchun sikl qanday yoziladi?",a:"for (int i=n-1; i>=0; i--)",w:["for (int i=0; i<n; i++)","for (int i=1; i<=n; i++)","for (int i=0; i<=n; i--)"]},
+  {t:"OOP",q:"Ob'ektga yo'naltirilgan dasturlash (OYD) nima?",a:"Dasturni ob'ektlar va ularning o'zaro aloqasi asosida qurish usuli",w:["Faqat o'yinlar yaratish usuli","Faqat grafik chizish usuli","Matematik hisob-kitoblar to'plami"]},
+  {t:"OOP",q:"Sinf (Class) tushunchasi nimani anglatadi?",a:"Ob'ektlar yaratish uchun shablon yoki qolip",w:["Dasturdagi xatoliklar ro'yxati","Faqat maktabdagi sinf","Faqat o'zgaruvchilar to'plami"]},
+  {t:"OOP",q:"Ob'ekt (Object) nima?",a:"Sinfning konkret (haqiqiy) nusxasi",w:["Dasturning nomi","Faqat kompyuter ekrani","Faqat dasturiy kutubxona"]},
+  {t:"OOP",q:"OYDning asosiy tamoyillari qaysilar?",a:"Inkapsulyatsiya, Vorislik, Polimorfizm, Abstraksiya",w:["Kiritish va chiqarish","Kompilyatsiya va Linker","Sikl va Shart operatorlari"]},
+  {t:"OOP",q:"Inkapsulyatsiya nima?",a:"Ma'lumotlarni va ularni qayta ishlovchi metodlarni bitta qobiq (sinf) ichida birlashtirish",w:["Ma'lumotlarni hamma uchun ochiq qilish","Dasturni o'chirib tashlash","Faqat xotirani tejash"]},
+  {t:"OOP",q:"Vorislik (Inheritance) nima?",a:"Mavjud sinf asosida uning xususiyatlarini saqlagan holda yangi sinf yaratish",w:["Ota-onadan qolgan meros","Ma'lumotlarni yashirish","Faqat o'zgaruvchilarni ko'paytirish"]},
+  {t:"OOP",q:"Polimorfizm nima?",a:"Bir xil nomli metodning turli sinflarda turlicha ishlashi",w:["Dasturning rangini o'zgartirish","Faqat bitta funksiyadan foydalanish","Ma'lumotlarni o'chirish"]},
+  {t:"OOP",q:"Klass ichidagi o'zgaruvchilar nima deb ataladi?",a:"Maydonlar (yoki xususiyatlar)",w:["Sikllar","Ko'rsatkichlar","Indekslar"]},
+  {t:"OOP",q:"Klass ichidagi funksiyalar nima deb ataladi?",a:"Metodlar",w:["Sikllar","Drayverlar","Preprotsessorlar"]},
+  {t:"OOP",q:"Ob'ektlar massivi nima?",a:"Bitta sinfga tegishli bo'lgan bir nechta ob'ektlar to'plami",w:["Faqat butun sonli massiv","Faqat bitta ob'ekt","Xatolar massivi"]},
+  {t:"OOP",q:"Sinf a'zolariga kirish huquqini belgilovchi kalit so'zlar qaysilar?",a:"public, private, protected",w:["open, close, stay","start, stop, pause","in, out, mid"]},
+  {t:"OOP",q:"public bo'limidagi a'zolarga kimlar murojaat qila oladi?",a:"Dasturning ixtiyoriy qismi va boshqa sinflar",w:["Faqat sinfning o'zi","Hech kim","Faqat operatsion tizim"]},
+  {t:"OOP",q:"private bo'limidagi a'zolarga kimlar murojaat qila oladi?",a:"Faqat sinfning o'ziga tegishli metodlar",w:["Hamma","Faqat voris sinflar","Faqat foydalanuvchi"]},
+  {t:"OOP",q:"Konstruktor nima?",a:"Ob'ekt yaratilganda avtomatik ravishda ishga tushadigan maxsus metod",w:["Dasturni o'chiruvchi funksiya","Kompyuterni yig'uvchi usta","Faqat rasm chizuvchi komponenta"]},
+  {t:"Visual Studio",q:"Visual Studio'da \"Toolbox\" paneli nima uchun kerak?",a:"Vizual komponentalarni (Button, Label va h.k.) loyihaga qo'shish uchun",w:["Kod yozish uchun","Xatolarni ko'rish uchun","Internetga chiqish uchun"]},
+  {t:"Visual Studio",q:"Click hodisasi (event) qachon sodir bo'ladi?",a:"Komponenta (masalan, tugma) sichqoncha bilan bosilganda",w:["Dastur ishga tushganda","Kompyuter o'chganda","Faqat xato bo'lganda"]},
+  {t:"Visual Studio",q:"Visual Studio'da \"Properties\" oynasi nima uchun xizmat qiladi?",a:"Tanlangan komponentaning xususiyatlarini (rangi, nomi, o'lchami) o'zgartirish uchun",w:["Yangi loyiha yaratish uchun","Kodlarni o'chirish uchun","Kompilyatsiya qilish uchun"]},
+  {t:"OOP",q:"Sinflar orasidagi munosabatlar turlariga nimalar kiradi?",a:"Vorislik, Agregatsiya, Kompozitsiya",w:["Qo'shish, Ayirish, Bo'lish","Sikl, Shart, Tanlov","Kiritish, Chiqarish, Saqlash"]},
+  {t:"Visual Studio",q:"Visual Studio muhitida uskunalar paneli qanday ataladi?",a:"Toolbar",w:["Menubar","Statusbar","Scrollbar"]},
+  {t:"Asoslar",q:"Dasturdagi \"Bug\" (baqaloq) so'zi nimani anglatadi?",a:"Dasturdagi xatolik yoki kamchilik",w:["Dasturning tez ishlashi","Dasturning yangi versiyasi","Kompyuter virusi"]},
+  {t:"Visual Studio",q:"Dasturni \"Run\" (F5) qilganda nima sodir bo'ladi?",a:"Dastur kompilyatsiya qilinadi va ishga tushiriladi",w:["Faqat kod saqlanadi","Faqat xatolar o'chiriladi","Kompyuter o'chadi"]}
+];
+
+let status={},filter='all',topic='Hammasi',mode='study';
+let qzTopic='Hammasi',qzCount=20,qzOrder='random';
+let qzList=[],qzIdx=0,qzCorrect=0,qzWrong=0,qzSkipped=0,qzMistakes=[],qzAnswered=false;
+
+function saveStatus(){try{localStorage.setItem('ds2_st',JSON.stringify(status));}catch(e){}}
+function loadStatus(){try{const s=localStorage.getItem('ds2_st');if(s)status=JSON.parse(s);}catch(e){}}
+loadStatus();
+
+const topics=['Hammasi',...new Set(Q.map(q=>q.t))];
+const topicCounts={};
+topics.forEach(t=>{topicCounts[t]=t==='Hammasi'?Q.length:Q.filter(q=>q.t===t).length;});
+
+function buildNav(){
+  document.getElementById('nav-list').innerHTML=topics.map(t=>
+    `<div class="nav-item${t===topic?' active':''}" onclick="setTopic('${t.replace(/'/g,"\\'")}')">
+      <div class="nav-dot"></div><span>${t}</span><span class="nav-count">${topicCounts[t]}</span>
+    </div>`
+  ).join('');
+}
+
+function setTopic(t){topic=t;buildNav();renderStudy();closeSidebar();}
+
+function updateStats(){
+  const kn=Object.values(status).filter(v=>v==='known').length;
+  const un=Object.values(status).filter(v=>v==='unknown').length;
+  const pct=Math.round((kn/Q.length)*100);
+  document.getElementById('sk').textContent=kn;
+  document.getElementById('su').textContent=un;
+  document.getElementById('pbar').style.width=pct+'%';
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('hkn').textContent=kn;
+  document.getElementById('hun').textContent=un;
+}
+
+function setFilter(f){
+  filter=f;
+  const map={all:'ca',unseen:'cs',unknown:'cu',known:'ck'};
+  ['all','unseen','unknown','known'].forEach(x=>{
+    const el=document.getElementById('chip-'+x);
+    if(el)el.className='chip'+(x===f?' '+map[x]:'');
+  });
+  renderStudy();
+}
+
+function getFiltered(){
+  const sv=(document.getElementById('search')||{value:''}).value.toLowerCase();
+  return Q.map((q,i)=>({...q,i})).filter(({q,t,i})=>{
+    const tOk=topic==='Hammasi'||t===topic;
+    const sOk=!sv||q.toLowerCase().includes(sv);
+    const fOk=filter==='all'||(filter==='known'&&status[i]==='known')||(filter==='unknown'&&status[i]==='unknown')||(filter==='unseen'&&!status[i]);
+    return tOk&&sOk&&fOk;
+  });
+}
+
+function mark(i,val,e){
+  if(e)e.stopPropagation();
+  status[i]=status[i]===val?undefined:val;
+  if(!status[i])delete status[i];
+  saveStatus();updateStats();
+  const card=document.getElementById('card-'+i);
+  if(!card)return;
+  const s=status[i];
+  card.className='qcard'+(s==='known'?' known':s==='unknown'?' unknown':'')+(card.classList.contains('open')?' open':'');
+  const dot=card.querySelector('.sdot');
+  if(dot)dot.style.background=s==='known'?'var(--succ)':s==='unknown'?'var(--danger)':'var(--bg4)';
+}
+
+function toggle(i,e){
+  if(e)e.stopPropagation();
+  const c=document.getElementById('card-'+i);
+  if(c)c.classList.toggle('open');
+}
+
+function renderStudy(){
+  if(mode!=='study')return;
+  const list=getFiltered();
+  const container=document.getElementById('qlist');
+  document.getElementById('sec-title').textContent=topic==='Hammasi'?'Barcha savollar':topic;
+  document.getElementById('cbadge').textContent=list.length+' ta';
+  if(!list.length){container.innerHTML='<div class="empty"><div style="font-size:40px">🔍</div><p>Savollar topilmadi</p></div>';return;}
+  container.innerHTML=list.map(({q,a,w,i,t})=>{
+    const s=status[i];
+    const cls='qcard'+(s==='known'?' known':s==='unknown'?' unknown':'');
+    const dotSt=s==='known'?'background:var(--succ)':s==='unknown'?'background:var(--danger)':'';
+    return `<div class="${cls}" id="card-${i}">
+      <div class="qcard-hdr" onclick="toggle(${i},event)">
+        <span class="qnum">#${i+1}</span><span class="qtag">${t}</span>
+        <span class="qtxt">${q}</span>
+        <div class="sdot" style="${dotSt}"></div><span class="chev">▼</span>
+      </div>
+      <div class="qans"><div class="ans-inner">
+        <div class="ans-correct"><span class="ans-ic">✓</span><span class="ans-txt">${a}</span></div>
+        <div class="ans-wrongs">${w.map(x=>`<div class="ans-w">${x}</div>`).join('')}</div>
+        <div class="qactions">
+          <button class="btn btn-ol" onclick="toggle(${i},event)">Yopish</button>
+          <button class="btn btn-g" onclick="mark(${i},'known',event)">✓ Bildim</button>
+          <button class="btn btn-r" onclick="mark(${i},'unknown',event)">✗ Bilmadim</button>
+        </div>
+      </div></div>
+    </div>`;
+  }).join('');
+  updateStats();
+}
+
+function switchMode(m){
+  mode=m;
+  document.getElementById('ms-study').className='msbtn'+(m==='study'?' active':'');
+  document.getElementById('ms-quiz').className='msbtn'+(m==='quiz'?' active':'');
+  document.getElementById('study-view').style.display=m==='study'?'block':'none';
+  document.getElementById('quiz-view').style.display=m==='quiz'?'block':'none';
+  if(m==='quiz')showSetup();
+}
+
+function showSetup(){
+  document.getElementById('qz-setup-div').style.display='block';
+  document.getElementById('qz-active-div').style.display='none';
+  document.getElementById('qz-result-div').style.display='none';
+  buildTopicOpts();
+}
+
+function buildTopicOpts(){
+  document.getElementById('qz-topic-opts').innerHTML=topics.map(t=>
+    `<button class="qo${t===qzTopic?' on':''}" onclick="setQzTopic('${t.replace(/'/g,"\\'")}',this)">${t} <span style="opacity:.5;font-size:10px">(${topicCounts[t]})</span></button>`
+  ).join('');
+}
+
+function setQzTopic(t,btn){qzTopic=t;document.querySelectorAll('#qz-topic-opts .qo').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function setQzCount(n,btn){qzCount=n;document.querySelectorAll('#cnt-opts .qo').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function setQzOrder(o,btn){qzOrder=o;document.querySelectorAll('#ord-opts .qo').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+function startQuiz(){
+  let pool=Q.map((q,i)=>({...q,i}));
+  if(qzTopic!=='Hammasi')pool=pool.filter(q=>q.t===qzTopic);
+  if(qzOrder==='unknown')pool=pool.filter(q=>status[q.i]==='unknown');
+  if(qzOrder!=='order')pool.sort(()=>Math.random()-.5);
+  qzList=pool.slice(0,Math.min(qzCount,pool.length));
+  if(!qzList.length){alert('Bu filtr uchun savollar topilmadi!');return;}
+  qzIdx=0;qzCorrect=0;qzWrong=0;qzSkipped=0;qzMistakes=[];
+  document.getElementById('qz-setup-div').style.display='none';
+  document.getElementById('qz-active-div').style.display='block';
+  document.getElementById('qz-result-div').style.display='none';
+  showQ();
+}
+
+function showQ(){
+  const total=qzList.length,q=qzList[qzIdx];
+  qzAnswered=false;
+  document.getElementById('qzpf').style.width=Math.round((qzIdx/total)*100)+'%';
+  document.getElementById('qzfrac').textContent=(qzIdx+1)+'/'+total;
+  document.getElementById('qzc').textContent=qzCorrect;
+  document.getElementById('qzw').textContent=qzWrong;
+  document.getElementById('qzs').textContent=qzSkipped;
+  document.getElementById('qznl').textContent='Savol '+(qzIdx+1);
+  document.getElementById('qztag').textContent=q.t;
+  document.getElementById('qzq').textContent=q.q;
+  document.getElementById('qznext').style.display='none';
+  const fb=document.getElementById('qzfb');fb.className='qz-fb';fb.textContent='';
+  const letters=['A','B','C','D'];
+  const opts=[q.a,...q.w].sort(()=>Math.random()-.5);
+  document.getElementById('qzopts').innerHTML=opts.map((o,idx)=>
+    `<button class="qz-opt" data-val="${escA(o)}" onclick="answerQ(this,'${escA(q.a)}')">
+      <span class="opt-let">${letters[idx]}</span>${o}
+    </button>`
+  ).join('');
+}
+
+function escA(s){return s.replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function answerQ(btn,correct){
+  if(qzAnswered)return;
+  qzAnswered=true;
+  const chosen=btn.getAttribute('data-val');
+  const allBtns=document.querySelectorAll('#qzopts .qz-opt');
+  allBtns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('qzfb');
+  if(chosen===correct){
+    btn.classList.add('correct');qzCorrect++;
+    fb.textContent="✓ To'g'ri!";fb.className='qz-fb ok show';
+  } else {
+    btn.classList.add('sel-wrong');qzWrong++;
+    allBtns.forEach(b=>{if(b.getAttribute('data-val')===correct)b.classList.add('correct');else if(b!==btn)b.classList.add('wrong');});
+    fb.textContent='✗ Xato! To\'g\'ri: '+correct;fb.className='qz-fb no show';
+    qzMistakes.push({q:qzList[qzIdx].q,yours:chosen,correct});
+  }
+  document.getElementById('qzc').textContent=qzCorrect;
+  document.getElementById('qzw').textContent=qzWrong;
+  document.getElementById('qznext').style.display='inline-block';
+}
+
+function skipQ(){
+  if(qzAnswered)return;
+  qzSkipped++;
+  qzMistakes.push({q:qzList[qzIdx].q,yours:"(o'tkazildi)",correct:qzList[qzIdx].a});
+  document.getElementById('qzs').textContent=qzSkipped;
+  qzIdx++;if(qzIdx>=qzList.length){showResult();return;}showQ();
+}
+
+function nextQ(){qzIdx++;if(qzIdx>=qzList.length){showResult();return;}showQ();}
+function endQuiz(){showSetup();}
+
+function showResult(){
+  document.getElementById('qz-active-div').style.display='none';
+  document.getElementById('qz-result-div').style.display='block';
+  const total=qzList.length,pct=Math.round((qzCorrect/total)*100);
+  document.getElementById('respct').textContent=pct+'%';
+  document.getElementById('respct').style.color=pct>=80?'var(--succ)':pct>=50?'var(--warn)':'var(--danger)';
+  document.getElementById('reslbl').textContent=(pct>=90?'🏆 Ajoyib!':pct>=70?'👍 Yaxshi!':pct>=50?'📚 Davom eting!':'💪 Ko\'proq o\'rganing!')+' ('+total+' ta savoldan)';
+  document.getElementById('resc').textContent=qzCorrect;
+  document.getElementById('resw').textContent=qzWrong;
+  document.getElementById('ress').textContent=qzSkipped;
+  const mel=document.getElementById('resmistakes');
+  if(qzMistakes.length){
+    mel.innerHTML='<div class="rm-title">❌ Xato / o\'tkazilgan ('+qzMistakes.length+' ta):</div>'+
+      qzMistakes.map(m=>`<div class="rm-item"><div class="rm-q">${m.q}</div><div class="rm-yours">Siz: ${m.yours}</div><div class="rm-corr">✓ To'g'ri: ${m.correct}</div></div>`).join('');
+  } else {
+    mel.innerHTML='<div style="text-align:center;color:var(--succ);font-size:18px;padding:20px">🎉 Barcha savolga to\'g\'ri javob berdingiz!</div>';
+  }
+}
+
+function restartQuiz(){
+  qzList.sort(()=>Math.random()-.5);
+  qzIdx=0;qzCorrect=0;qzWrong=0;qzSkipped=0;qzMistakes=[];
+  document.getElementById('qz-result-div').style.display='none';
+  document.getElementById('qz-active-div').style.display='block';
+  showQ();
+}
+
+function backToSetup(){showSetup();}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+
+buildNav();renderStudy();updateStats();
+</script>
+</body>
+</html>
